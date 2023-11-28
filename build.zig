@@ -11,10 +11,16 @@ pub fn build(b: *std.Build) void {
         .optimize = optimize,
     });
 
+    b.install_path = "./zig-out/bin/";
+
     b.installArtifact(exe);
 
-    const run_exe = b.addRunArtifact(exe);
+    const run_cmd = b.addRunArtifact(exe);
 
-    const run_step = b.step("run", "Run the application");
-    run_step.dependOn(&run_exe.step);
+    if (b.args) |args| {
+        run_cmd.addArgs(args);
+    }
+
+    const run_step = b.step("run", "Run the app");
+    run_step.dependOn(&run_cmd.step);
 }

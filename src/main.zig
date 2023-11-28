@@ -1,10 +1,12 @@
 const utils = @import("utils.zig");
-const aoc15 = @import("2015/year.zig");
+const years = @import("years.zig");
 
 pub fn main() !void {
-    aoc15.performYear();
-    try utils.out.print("\n", .{});
-    aoc15.benchYear(30);
-
-    try utils.writer.flush(); // don't forget to wash your hands!
+    if (utils.processArgs()) |procs| {
+        for (procs.items) |proc| {
+            years.procYears(proc);
+        }
+    } else {
+        try utils.printHelp();
+    }
 }

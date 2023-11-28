@@ -1,5 +1,4 @@
 const utils = @import("../utils.zig");
-const std = @import("std");
 
 pub inline fn procYear(proc: utils.Proc) void {
     if (proc.day > 25)
