@@ -195,13 +195,17 @@ pub fn Day(
         comptime _day: u8 = day,
         pub fn perform(self: *Self) void {
             const input = utils.loadFile(utils.fba, self._year, self._day) catch return;
+            utils.out.print("Advent of Code {d:0>4}, Day {d:0>2}\n", .{ self._year, self._day }) catch unreachable;
+            utils.writer.flush() catch unreachable;
             defer utils.fba.free(input);
+
             const res_1 = self._part1(input);
+            utils.out.print("\tPart One: {}\n", .{res_1}) catch unreachable;
+            utils.writer.flush() catch unreachable;
+
             const res_2 = self._part2(input);
-            utils.out.print(
-                "Advent of Code {d:0>4}, Day {d:0>2}\n\tPart One: {}\n\tPart Two: {}\n",
-                .{ self._year, self._day, res_1, res_2 },
-            ) catch unreachable;
+            utils.out.print("\tPart Two: {}\n", .{res_2}) catch unreachable;
+            utils.writer.flush() catch unreachable;
         }
 
         pub fn benchMark(self: *Self, iterations: usize) void {
@@ -262,7 +266,6 @@ pub fn Day(
                 true => self.benchMark(_p.iterations),
                 false => self.perform(),
             }
-            utils.writer.flush() catch unreachable;
         }
     };
 }

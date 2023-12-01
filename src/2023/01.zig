@@ -6,84 +6,76 @@ const T = i32;
 pub var aoc = utils.Day(T, dayOne, dayTwo, year, day){};
 
 fn dayOne(input: []const u8) T {
-    //Sum of all
+    // sum of all
     var sum: i32 = 0;
-    //Split inputs by line
+    // split inputs by line
     var splits = std.mem.splitScalar(u8, input, '\n');
     while (splits.next()) |line| {
-        //if line length is valid to iterate over
         var first: u8 = 0;
         var last: u8 = 0;
-        // for each numeric character in line,
-        first_block: for (line) |c| {
-            if (c >= 48 and c < 58) {
-                first = c - 48;
-                break :first_block;
-            }
-        }
-        // for each character in line, but backwards
-        last_block: for (0..line.len) |i| {
-            const c = line[line.len - (i + 1)];
-            if (c >= 48 and c < 58) {
-                last = c - 48;
-                break :last_block;
-            }
-        }
+        // for each element in line
+        f_block: for (0..line.len) |i|
+            // if character is valid, assign and break
+            if (line[i] >= 48 and line[i] < 58) {
+                first = line[i] - 48;
+                break :f_block;
+            };
+        // do it again, but in reverse
+        l_block: for (0..line.len) |i|
+            if (line[line.len - (i + 1)] >= 48 and line[line.len - (i + 1)] < 58) {
+                last = line[line.len - (i + 1)] - 48;
+                break :l_block;
+            };
 
         // then add them to sum
         sum += first * 10 + last;
     }
     return sum;
 }
+
 fn dayTwo(input: []const u8) T {
-    //Sum of all
+    // sum of all
     var sum: i32 = 0;
-    //Split inputs by line
+    // split inputs by line
     var splits = std.mem.splitScalar(u8, input, '\n');
     while (splits.next()) |line| {
-        //if line length is valid to iterate over
-        if (line.len > 1) {
-            var first: u8 = 0;
-            var last: u8 = 0;
-            //for every character in the line
-            first_block: for (line, 0..) |c, i| {
-                if (c >= 48 and c < 58) {
-                    first = c - 48;
-                    break :first_block;
-                } else for (NumName, 0..) |num, j|
-                    //but only if enough space is left in the line for that name
-                    if (i + num.len <= line.len)
-                        //and if it does equal
-                        if (std.mem.eql(u8, num, line[i .. i + num.len])) {
-                            //then that's our number
-                            first = @as(u8, @intCast(j));
-                            break :first_block;
-                        };
-            }
-            // for every character in line.. but in reverse
-            last_block: for (0..line.len) |l| {
-                const i = line.len - (l + 1);
-                const c = line[i];
-                if (c >= 48 and c < 58) {
-                    last = c - 48;
-                    break :last_block;
-                } else for (NumName, 0..) |num, j|
-                    //but only if enough space is left in the line for that name
-                    if (i + num.len <= line.len)
-                        //and if it does equal
-                        if (std.mem.eql(u8, num, line[i .. i + num.len])) {
-                            //then that's our number
-                            last = @as(u8, @intCast(j));
-                            break :last_block;
-                        };
-            }
-
-            sum += first * 10 + last;
-        }
+        var first: u8 = 0;
+        var last: u8 = 0;
+        // for every character in the line
+        f_block: for (0..line.len) |i|
+            // if is valid character, assign and break
+            if (isNumForMe(line, i)) |n| {
+                first = n;
+                break :f_block;
+            };
+        // do it again, but in reverse
+        l_block: for (0..line.len) |i|
+            if (isNumForMe(line, line.len - (i + 1))) |n| {
+                last = n;
+                break :l_block;
+            };
+        // then add to sum
+        sum += first * 10 + last;
     }
+
     return sum;
 }
 
+///Checks the position in the supplied buffer, to see if it's a number
+///Returns the number as an integral value, or null if invalid
+inline fn isNumForMe(buff: []const u8, i: usize) ?u8 {
+    var c: ?u8 = null;
+    if (buff[i] >= 48 and buff[i] < 58)
+        c = buff[i] - 48
+    else for (NumName, 0..) |name, num|
+        if (i + name.len <= buff.len)
+            if (std.mem.eql(u8, name, buff[i .. i + name.len])) {
+                return @as(u8, @intCast(num));
+            };
+    return c;
+}
+
+/// A collection of all single digit number names, in order of index
 const NumName = [_][]const u8{
     "zero",
     "one",
