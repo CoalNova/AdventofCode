@@ -203,45 +203,60 @@ pub fn Day(
                 .{ self._year, self._day, res_1, res_2 },
             ) catch unreachable;
         }
+
         pub fn benchMark(self: *Self, iterations: usize) void {
             const input = utils.loadFile(utils.fba, self._year, self._day) catch return;
             defer utils.fba.free(input);
-            var min_1: u64 = std.math.maxInt(u64);
-            var max_1: u64 = 0;
-            var avg_1: u64 = 0;
-            var min_2: u64 = std.math.maxInt(u64);
-            var max_2: u64 = 0;
-            var avg_2: u64 = 0;
-
-            for (iterations) |_| {
-                const then_1 = std.time.Instant.now() catch unreachable;
-                _ = self._part1(input);
-                const now_1 = std.time.Instant.now() catch unreachable;
-                const since_1 = now_1.since(then_1);
-
-                const then_2 = std.time.Instant.now() catch unreachable;
-                _ = self._part2(input);
-                const now_2 = std.time.Instant.now() catch unreachable;
-                const since_2 = now_2.since(then_2);
-
-                if (since_1 > max_1) max_1 = since_1;
-                if (since_1 < min_1) min_1 = since_1;
-                if (since_2 > max_2) max_2 = since_2;
-                if (since_2 < min_2) min_2 = since_2;
-                avg_1 +|= since_1;
-                avg_2 +|= since_2;
-            }
-            avg_1 /= iterations;
-            avg_2 /= iterations;
+            // Print Header
             utils.out.print(
                 \\Advent of Code {d:0>4}, Day {d:0>2} - Timings over {d} iterations
+                \\
+            , .{ self._year, self._day, iterations }) catch unreachable;
+            utils.writer.flush() catch unreachable;
+
+            var min: u64 = std.math.maxInt(u64);
+            var max: u64 = 0;
+            var avg: u64 = 0;
+
+            // Part One
+            for (iterations) |_| {
+                const then = std.time.Instant.now() catch unreachable;
+                _ = self._part1(input);
+                const now = std.time.Instant.now() catch unreachable;
+                const since = now.since(then);
+                if (since > max) max = since;
+                if (since < min) min = since;
+                avg +|= since;
+            }
+            avg /= iterations;
+            utils.out.print(
                 \\    Part One - avg: {d:0>5} ns min: {d:0>5} ns max: {d:0>5} ns
+                \\
+            , .{ avg, min, max }) catch unreachable;
+            utils.writer.flush() catch unreachable;
+
+            min = std.math.maxInt(u64);
+            max = 0;
+            avg = 0;
+
+            // Part Two
+            for (iterations) |_| {
+                const then = std.time.Instant.now() catch unreachable;
+                _ = self._part2(input);
+                const now = std.time.Instant.now() catch unreachable;
+                const since = now.since(then);
+                if (since > max) max = since;
+                if (since < min) min = since;
+                avg +|= since;
+            }
+            avg /= iterations;
+            utils.out.print(
                 \\    Part Two - avg: {d:0>5} ns min: {d:0>5} ns max: {d:0>5} ns
                 \\
-            ,
-                .{ self._year, self._day, iterations, avg_1, min_1, max_1, avg_2, min_2, max_2 },
-            ) catch unreachable;
+            , .{ avg, min, max }) catch unreachable;
+            utils.writer.flush() catch unreachable;
         }
+
         pub fn proc(self: *Self, _p: utils.Proc) void {
             switch (_p.bench) {
                 true => self.benchMark(_p.iterations),
