@@ -48,6 +48,7 @@ fn dayTwo(input: []const u8) T {
     while (lines.next()) |line| {
         // split lines
         var blobs = std.mem.splitScalar(u8, line, ' ');
+        // max colors
         var max_rgbs = [_]u16{ 0, 0, 0 };
         var count: u16 = 0;
         // check for game
@@ -65,6 +66,7 @@ fn dayTwo(input: []const u8) T {
                 if (blob.len >= color.name.len)
                     if (std.mem.eql(u8, color.name, blob[0..color.name.len]))
                         if (count > max_rgbs[i]) {
+                            //add to max colors
                             max_rgbs[i] = count;
                         };
         }
