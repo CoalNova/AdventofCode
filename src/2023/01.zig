@@ -32,27 +32,24 @@ fn dayTwo(input: []const u8) T {
     var sum: i32 = 0;
     var first: u8 = 0;
     var last: u8 = 0;
-    var pre: usize = 0;
     // split inputs by line
-    for (input, 0..) |c, i| {
-        if (c == '\n') {
-            f_block: for (0..i - pre) |j| {
-                if (isNumForMe(input, pre + j)) |n| {
-                    first = n;
-                    break :f_block;
-                }
+    var lines = std.mem.splitScalar(u8, input, '\n');
+    while (lines.next()) |line| {
+        f_block: for (line, 0..) |_, i| {
+            if (isNumForMe(input, i)) |n| {
+                first = n;
+                break :f_block;
             }
-            l_block: for (0..i - pre) |j| {
-                if (isNumForMe(input, i - j)) |n| {
-                    last = n;
-                    break :l_block;
-                }
-            }
-            pre = i;
-            sum += first * 10 + last;
-            first = 0;
-            last = 0;
         }
+        l_block: for (0..line.len) |i| {
+            if (isNumForMe(input, line.len - (i + 1))) |n| {
+                last = n;
+                break :l_block;
+            }
+        }
+        sum += first * 10 + last;
+        first = 0;
+        last = 0;
     }
     return sum;
 }
