@@ -8,27 +8,21 @@ pub var aoc = utils.Day(T, dayOne, dayTwo, year, day){};
 fn dayOne(input: []const u8) T {
     // sum of all
     var sum: i32 = 0;
+    var first: u8 = 0;
+    var last: u8 = 0;
     // split inputs by line
-    var splits = std.mem.splitScalar(u8, input, '\n');
-    while (splits.next()) |line| {
-        var first: u8 = 0;
-        var last: u8 = 0;
-        // for each element in line
-        f_block: for (0..line.len) |i|
-            // if character is valid, assign and break
-            if (line[i] >= 48 and line[i] < 58) {
-                first = line[i] - 48;
-                break :f_block;
-            };
-        // do it again, but in reverse
-        l_block: for (0..line.len) |i|
-            if (line[line.len - (i + 1)] >= 48 and line[line.len - (i + 1)] < 58) {
-                last = line[line.len - (i + 1)] - 48;
-                break :l_block;
-            };
-
-        // then add them to sum
-        sum += first * 10 + last;
+    block: for (input) |c| {
+        if (c >= 48 and c < 58) {
+            last = c - 48;
+            if (first == 0)
+                first = c - 48;
+            continue :block;
+        }
+        if (c == '\n') {
+            sum += first * 10 + last;
+            first = 0;
+            last = 0;
+        }
     }
     return sum;
 }
@@ -36,55 +30,81 @@ fn dayOne(input: []const u8) T {
 fn dayTwo(input: []const u8) T {
     // sum of all
     var sum: i32 = 0;
+    var first: u8 = 0;
+    var last: u8 = 0;
+    var pre: usize = 0;
     // split inputs by line
-    var splits = std.mem.splitScalar(u8, input, '\n');
-    while (splits.next()) |line| {
-        var first: u8 = 0;
-        var last: u8 = 0;
-        // for every character in the line
-        f_block: for (0..line.len) |i|
-            // if is valid character, assign and break
-            if (isNumForMe(line, i)) |n| {
-                first = n;
-                break :f_block;
-            };
-        // do it again, but in reverse
-        l_block: for (0..line.len) |i|
-            if (isNumForMe(line, line.len - (i + 1))) |n| {
-                last = n;
-                break :l_block;
-            };
-        // then add to sum
-        sum += first * 10 + last;
+    for (input, 0..) |c, i| {
+        if (c == '\n') {
+            f_block: for (0..i - pre) |j| {
+                if (isNumForMe(input, pre + j)) |n| {
+                    first = n;
+                    break :f_block;
+                }
+            }
+            l_block: for (0..i - pre) |j| {
+                if (isNumForMe(input, i - j)) |n| {
+                    last = n;
+                    break :l_block;
+                }
+            }
+            pre = i;
+            sum += first * 10 + last;
+            first = 0;
+            last = 0;
+        }
     }
-
     return sum;
 }
 
 ///Checks the position in the supplied buffer, to see if it's a number
 ///Returns the number as an integral value, or null if invalid
-inline fn isNumForMe(buff: []const u8, i: usize) ?u8 {
-    var c: ?u8 = null;
-    if (buff[i] >= 48 and buff[i] < 58)
-        c = buff[i] - 48
-    else for (NumName, 0..) |name, num|
-        if (i + name.len <= buff.len)
-            if (std.mem.eql(u8, name, buff[i .. i + name.len])) {
-                return @as(u8, @intCast(num));
-            };
-    return c;
+inline fn isNumForMe(input: []const u8, i: usize) ?u8 {
+    if (input[i] >= 48 and input[i] < 58)
+        return input[i] - 48;
+    switch (input[i]) {
+        'o' => {
+            if (std.mem.eql(u8, "one", input[i .. i + 3])) {
+                return 1;
+            }
+        },
+        't' => {
+            if (std.mem.eql(u8, "two", input[i .. i + 3])) {
+                return 2;
+            }
+            if (std.mem.eql(u8, "three", input[i .. i + 5])) {
+                return 3;
+            }
+        },
+        'f' => {
+            if (std.mem.eql(u8, "four", input[i .. i + 4])) {
+                return 4;
+            }
+            if (std.mem.eql(u8, "five", input[i .. i + 4])) {
+                return 5;
+            }
+        },
+        's' => {
+            if (std.mem.eql(u8, "six", input[i .. i + 3])) {
+                return 6;
+            }
+            if (std.mem.eql(u8, "seven", input[i .. i + 5])) {
+                return 7;
+            }
+        },
+        'e' => {
+            if (std.mem.eql(u8, "eight", input[i .. i + 5])) {
+                return 8;
+            }
+        },
+        'n' => {
+            if (std.mem.eql(u8, "nine", input[i .. i + 4])) {
+                return 9;
+            }
+        },
+        else => {
+            return null;
+        },
+    }
+    return null;
 }
-
-/// A collection of all single digit number names, in order of index
-const NumName = [_][]const u8{
-    "zero",
-    "one",
-    "two",
-    "three",
-    "four",
-    "five",
-    "six",
-    "seven",
-    "eight",
-    "nine",
-};
