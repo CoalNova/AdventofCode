@@ -10,15 +10,15 @@ fn dayOne(input: []const u8) T {
     var sum: i32 = 0;
     var first: u8 = 0;
     var last: u8 = 0;
-    // split inputs by line
+    // iterate over every
     block: for (input) |c| {
-        if (c >= 48 and c < 58) {
-            last = c - 48;
-            if (first == 0)
-                first = c - 48;
-            continue :block;
-        }
-        if (c == '\n') {
+        if (c < 58) {
+            if (c >= 48) {
+                last = c - 48;
+                if (first == 0)
+                    first = c - 48;
+                continue :block;
+            }
             sum += first * 10 + last;
             first = 0;
             last = 0;
