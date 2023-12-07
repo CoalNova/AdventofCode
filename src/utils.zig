@@ -34,7 +34,11 @@ pub fn loadFile(
     );
     const file = try std.fs.cwd().openFile(filename, .{});
     allocator.free(filename);
-    return file.readToEndAlloc(allocator, fixed_buffer_size);
+    const file_len = try file.getEndPos();
+    var input: []u8 = try fba.alloc(u8, file_len + 1);
+    _ = try file.readAll(input);
+    input[input.len - 1] = 0;
+    return input;
 }
 
 pub const Proc = struct { year: u16, day: u8 = 0, bench: bool = false, iterations: usize = 0 };
@@ -217,80 +221,22 @@ pub fn Day(
                 .{ self._year, self._day, iterations },
             ) catch unreachable;
             utils.writer.flush() catch unreachable;
+            var val: T = undefined;
 
-            const preheat_time = 2e9;
-
-            var min: u64 = std.math.maxInt(u64);
-            var max: u64 = 0;
-            var avg: u64 = 0;
-            var i: usize = 0;
-            var val: i32 = 0;
-
-            utils.out.print("\tWarming up...\r", .{}) catch unreachable;
-            utils.writer.flush() catch unreachable;
-
-            // Part One
-            const start_1 = std.time.Instant.now() catch unreachable;
-            p1_block: while (true) {
-                const then = std.time.Instant.now() catch unreachable;
-                val +%= self._part1(input) + @as(i32, @intCast(i));
-                const now = std.time.Instant.now() catch unreachable;
-                const since = now.since(then);
-                const end = std.time.Instant.now() catch unreachable;
-                if (end.since(start_1) > preheat_time) {
-                    i += 1;
-                    if (since > max) max = since;
-                    if (since < min) min = since;
-                    avg +|= since;
-                    if (i >= iterations) break :p1_block;
-                    utils.out.print(
-                        "\tPart One - avg: {d:0>5} ns min: {d:0>5} ns max: {d:0>5} ns [{d} of {d}]\r",
-                        .{ avg / i, min, max, i, iterations },
-                    ) catch unreachable;
-                    utils.writer.flush() catch unreachable;
-                }
+            const p1_start = std.time.Instant.now() catch unreachable;
+            for (iterations) |_| {
+                val +%= self._part1(input);
             }
-            avg /= iterations;
-            utils.out.print(
-                "\tPart One - avg: {d:0>5} ns min: {d:0>5} ns max: {d:0>5} ns | tdata {d:3}\n",
-                .{ avg, min, max, val },
-            ) catch unreachable;
+            const p1_end = std.time.Instant.now() catch unreachable;
+            utils.out.print("Part 1 - raw:{d:0>10} avg:{d:0>5} ns \tval:{} \n", .{ p1_end.since(p1_start), p1_end.since(p1_start) / iterations, val }) catch unreachable;
             utils.writer.flush() catch unreachable;
 
-            min = std.math.maxInt(u64);
-            max = 0;
-            avg = 0;
-            i = 0;
-
-            utils.out.print("\tWarming up...\r", .{}) catch unreachable;
-            utils.writer.flush() catch unreachable;
-
-            // Part Two
-            const start_2 = std.time.Instant.now() catch unreachable;
-            p2_block: while (true) {
-                const then = std.time.Instant.now() catch unreachable;
-                val +%= self._part2(input) + @as(i32, @intCast(i));
-                const now = std.time.Instant.now() catch unreachable;
-                const since = now.since(then);
-                const end = std.time.Instant.now() catch unreachable;
-                if (end.since(start_2) > preheat_time) {
-                    i += 1;
-                    if (since > max) max = since;
-                    if (since < min) min = since;
-                    avg +|= since;
-                    if (i >= iterations) break :p2_block;
-                    utils.out.print(
-                        "\tPart Two - avg: {d:0>5} ns min: {d:0>5} ns max: {d:0>5} ns [{d} of {d}]\r",
-                        .{ avg / i, min, max, i, iterations },
-                    ) catch unreachable;
-                    utils.writer.flush() catch unreachable;
-                }
+            const p2_start = std.time.Instant.now() catch unreachable;
+            for (iterations) |_| {
+                val +%= self._part2(input);
             }
-            avg /= iterations;
-            utils.out.print(
-                "\tPart Two - avg: {d:0>5} ns min: {d:0>5} ns max: {d:0>5} ns | tdata {d:3}\n",
-                .{ avg, min, max, val },
-            ) catch unreachable;
+            const p2_end = std.time.Instant.now() catch unreachable;
+            utils.out.print("Part 2 - raw:{d:0>10} avg:{d:0>5} ns \tval:{}\n", .{ p2_end.since(p2_start), p2_end.since(p2_start) / iterations, val }) catch unreachable;
             utils.writer.flush() catch unreachable;
         }
 
