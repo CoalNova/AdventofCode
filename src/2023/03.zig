@@ -1,11 +1,15 @@
 const std = @import("std");
-const utils = @import("../utils.zig");
+const _day = @import("../day.zig");
+
 const year = 2023;
 const day = 3;
 const T = i32;
-pub var aoc = utils.Day(T, dayOne, dayTwo, year, day){};
 
-fn dayOne(input: []const u8) T {
+const sampleOne =
+    \\
+;
+
+fn partOne(input: []const u8) T {
     // get line length
     const length = for (input, 0..) |c, i| {
         if (c == '\n') break i + 1;
@@ -66,7 +70,12 @@ fn dayOne(input: []const u8) T {
     }
     return parts_sum;
 }
-fn dayTwo(input: []const u8) T {
+
+const sampleTwo =
+    \\ 
+;
+
+fn partTwo(input: []const u8) T {
     // get line length
     const length = for (input, 0..) |c, i| {
         if (c == '\n') break i + 1;
@@ -134,3 +143,5 @@ fn dayTwo(input: []const u8) T {
 inline fn isValidChar(c: u8) bool {
     return (!std.ascii.isDigit(c) and c != '.' and c != '\n');
 }
+
+pub const Day = _day.Day(T, partOne, partTwo, year, day, sampleOne, sampleTwo){};

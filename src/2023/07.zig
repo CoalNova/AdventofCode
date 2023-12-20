@@ -1,14 +1,24 @@
 const std = @import("std");
-const utils = @import("../utils.zig");
+const alc = @import("../alloc.zig");
+const _day = @import("../day.zig");
+
 const year = 2023;
 const day = 7;
-const T = i128;
-pub var aoc = utils.Day(T, dayOne, dayTwo, year, day){};
+const T = i32;
 
-fn dayOne(input: []const u8) T {
+const sampleOne =
+    \\
+;
+
+fn partOne(input: []const u8) T {
     return procHands(input, null);
 }
-fn dayTwo(input: []const u8) T {
+
+const sampleTwo =
+    \\ 
+;
+
+fn partTwo(input: []const u8) T {
     return procHands(input, 'J');
 }
 
@@ -28,8 +38,8 @@ fn procHands(input: []const u8, wild_card: ?u8) T {
     //skip sentinel
     var lines = std.mem.splitScalar(u8, input[0 .. input.len - 1], '\n');
     var hands: []Hand =
-        utils.gpa.alloc(Hand, std.mem.count(u8, input, "\n")) catch unreachable;
-    defer utils.gpa.free(hands);
+        alc.gpa.alloc(Hand, std.mem.count(u8, input, "\n")) catch unreachable;
+    defer alc.gpa.free(hands);
     var i: u16 = 0;
     while (lines.next()) |line| {
         if (line.len > 0) {
@@ -182,3 +192,5 @@ inline fn getPower(face_value: u8, wild_card: ?u8) u8 {
         else => 0,
     };
 }
+
+pub const Day = _day.Day(T, partOne, partTwo, year, day, sampleOne, sampleTwo){};

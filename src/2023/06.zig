@@ -1,11 +1,15 @@
 const std = @import("std");
-const utils = @import("../utils.zig");
+const _day = @import("../day.zig");
+
 const year = 2023;
 const day = 6;
 const T = i32;
-pub var aoc = utils.Day(T, dayOne, dayTwo, year, day){};
 
-fn dayOne(input: []const u8) T {
+const sampleOne =
+    \\
+;
+
+fn partOne(input: []const u8) T {
     var tokens = std.zig.Tokenizer.init(input[0 .. input.len - 1 :0]);
     while (tokens.next().tag != .colon) {}
     var splits = tokens;
@@ -34,7 +38,11 @@ fn dayOne(input: []const u8) T {
     return bests;
 }
 
-fn dayTwo(input: []const u8) T {
+const sampleTwo =
+    \\ 
+;
+
+fn partTwo(input: []const u8) T {
     const split = std.mem.indexOf(u8, input, "\n").?;
     var time: usize = 0;
     for (input[5..split]) |c| {
@@ -55,3 +63,5 @@ fn dayTwo(input: []const u8) T {
     ));
     return @as(i32, @intCast(time - win_start * 2 + 1));
 }
+
+pub const Day = _day.Day(T, partOne, partTwo, year, day, sampleOne, sampleTwo){};

@@ -1,17 +1,20 @@
 const std = @import("std");
-const utils = @import("../utils.zig");
+const _day = @import("../day.zig");
+const alc = @import("../alloc.zig");
+
 const year = 2023;
 const day = 5;
 const T = i32;
-pub var aoc = utils.Day(T, dayOne, dayTwo, year, day){};
-const seedT = i64;
 
-fn dayOne(input: []const u8) T {
-    // track stage
+const sampleOne =
+    \\
+;
+
+fn partOne(input: []const u8) T { // track stage
     var stage: u8 = 0;
     // create null-terminated buffer for posix pipe behaviour
-    var buffer = utils.gpa.alloc(u8, input.len + 1) catch unreachable;
-    defer utils.gpa.free(buffer);
+    var buffer = alc.gpa.alloc(u8, input.len + 1) catch unreachable;
+    defer alc.gpa.free(buffer);
     // memcopy, but safer
     for (input, 0..) |c, i| buffer[i] = c;
     buffer[buffer.len - 1] = 0;
@@ -23,7 +26,7 @@ fn dayOne(input: []const u8) T {
     var seed_length: u8 = 0;
 
     // process collection
-    var procs = [_]std.ArrayList(Proc){std.ArrayList(Proc).init(utils.gpa)} ** (titles.len);
+    var procs = [_]std.ArrayList(Proc){std.ArrayList(Proc).init(alc.gpa)} ** (titles.len);
     defer for (&procs) |*p| p.deinit();
 
     main_block: while (true) {
@@ -73,12 +76,15 @@ fn dayOne(input: []const u8) T {
     return lowest;
 }
 
-fn dayTwo(input: []const u8) T {
-    // track stage
+const sampleTwo =
+    \\ 
+;
+
+fn partTwo(input: []const u8) T { // track stage
     var stage: u8 = 0;
     // create null-terminated buffer for posix pipe behaviour
-    var buffer = utils.gpa.alloc(u8, input.len + 1) catch unreachable;
-    defer utils.gpa.free(buffer);
+    var buffer = alc.gpa.alloc(u8, input.len + 1) catch unreachable;
+    defer alc.gpa.free(buffer);
     // memcopy, but safer
     for (input, 0..) |c, i| buffer[i] = c;
     buffer[buffer.len - 1] = 0;
@@ -90,7 +96,7 @@ fn dayTwo(input: []const u8) T {
     var seed_length: u8 = 0;
 
     // process collection
-    var procs = [_]std.ArrayList(Proc){std.ArrayList(Proc).init(utils.gpa)} ** (titles.len);
+    var procs = [_]std.ArrayList(Proc){std.ArrayList(Proc).init(alc.gpa)} ** (titles.len);
     defer for (&procs) |*p| p.deinit();
 
     main_block: while (true) {
@@ -145,6 +151,8 @@ fn dayTwo(input: []const u8) T {
     return lowest;
 }
 
+const seedT = i64;
+
 const titles = [_][]const u8{
     "start:",
     "seeds:",
@@ -163,3 +171,5 @@ const Proc = struct {
     offset: i64,
     stage: u8,
 };
+
+pub const Day = _day.Day(T, partOne, partTwo, year, day, sampleOne, sampleTwo){};

@@ -1,11 +1,20 @@
 const std = @import("std");
-const utils = @import("../utils.zig");
+const _day = @import("../day.zig");
+
 const year = 2023;
 const day = 2;
 const T = i32;
-pub var aoc = utils.Day(T, dayOne, dayTwo, year, day){};
 
-fn dayOne(input: []const u8) T {
+const sampleOne =
+    \\Game 1: 3 blue, 4 red; 1 red, 2 green, 6 blue; 2 green
+    \\Game 2: 1 blue, 2 green; 3 green, 4 blue, 1 red; 1 green, 1 blue
+    \\Game 3: 8 green, 6 blue, 20 red; 5 blue, 4 red, 13 green; 5 green, 1 red
+    \\Game 4: 1 green, 3 red, 6 blue; 3 green, 6 red; 3 green, 15 blue, 14 red
+    \\Game 5: 6 red, 1 blue, 3 green; 2 blue, 1 red, 2 green
+    \\
+;
+
+fn partOne(input: []const u8) T {
     var games: i32 = 0;
     var lines = std.mem.splitScalar(u8, input, '\n');
     // for each line in inputs
@@ -41,7 +50,17 @@ fn dayOne(input: []const u8) T {
     }
     return games;
 }
-fn dayTwo(input: []const u8) T {
+
+const sampleTwo =
+    \\Game 1: 3 blue, 4 red; 1 red, 2 green, 6 blue; 2 green
+    \\Game 2: 1 blue, 2 green; 3 green, 4 blue, 1 red; 1 green, 1 blue
+    \\Game 3: 8 green, 6 blue, 20 red; 5 blue, 4 red, 13 green; 5 green, 1 red
+    \\Game 4: 1 green, 3 red, 6 blue; 3 green, 6 red; 3 green, 15 blue, 14 red
+    \\Game 5: 6 red, 1 blue, 3 green; 2 blue, 1 red, 2 green
+    \\
+;
+
+fn partTwo(input: []const u8) T {
     var max_mins: i32 = 0;
     var lines = std.mem.splitScalar(u8, input, '\n');
     // for each line in inputs
@@ -82,3 +101,5 @@ const MaxColors = [_]struct { name: []const u8, val: u16 }{
     .{ .name = "green", .val = 13 },
     .{ .name = "blue", .val = 14 },
 };
+
+pub const Day = _day.Day(T, partOne, partTwo, year, day, sampleOne, sampleTwo){};

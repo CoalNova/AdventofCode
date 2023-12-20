@@ -1,11 +1,19 @@
 const std = @import("std");
-const utils = @import("../utils.zig");
+const _day = @import("../day.zig");
+
 const year = 2023;
 const day = 1;
 const T = i32;
-pub var aoc = utils.Day(T, dayOne, dayTwo, year, day){};
 
-fn dayOne(input: []const u8) T {
+const sampleOne =
+    \\1abc2
+    \\pqr3stu8vwx
+    \\a1b2c3d4e5f
+    \\treb7uchet
+    \\
+;
+
+fn partOne(input: []const u8) T {
     // sum of all
     var sum: i32 = 0;
     var first: u8 = 0;
@@ -27,7 +35,18 @@ fn dayOne(input: []const u8) T {
     return sum;
 }
 
-fn dayTwo(input: []const u8) T {
+const sampleTwo =
+    \\two1nine
+    \\eightwothree
+    \\abcone2threexyz
+    \\xtwone3four
+    \\4nineeightseven2
+    \\zoneight234
+    \\7pqrstsixteen
+    \\
+;
+
+fn partTwo(input: []const u8) T {
     // sum of all
     var sum: i32 = 0;
     var first: u8 = 0;
@@ -53,7 +72,6 @@ fn dayTwo(input: []const u8) T {
     }
     return sum;
 }
-
 ///Checks the position in the supplied buffer, to see if it's a number
 ///Returns the number as an integral value, or null if invalid
 inline fn isNumForMe(input: []const u8, i: usize) ?u8 {
@@ -105,3 +123,5 @@ inline fn isNumForMe(input: []const u8, i: usize) ?u8 {
     }
     return null;
 }
+
+pub const Day = _day.Day(T, partOne, partTwo, year, day, sampleOne, sampleTwo){};
